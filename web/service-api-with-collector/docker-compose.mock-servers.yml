@@ -1,0 +1,28 @@
+services:
+  mock_server-metrics:
+    image: golang:1.25.6-alpine
+    container_name: metrics
+    working_dir: /app
+    volumes:
+      - ./src/cmd/mock_server-metrics/main.go:/app/main.go
+    command: >
+      sh -c "go mod init temp && 
+            go env -w GOPROXY=https://goproxy.io,direct &&
+            go get github.com/gin-gonic/gin && 
+            go run main.go"
+    networks:
+      - weather-station
+
+  mock_server-logging:
+    image: golang:1.25.6-alpine
+    container_name: log
+    working_dir: /app
+    volumes:
+      - ./src/cmd/mock_server-logging/main.go:/app/main.go
+    command: >
+      sh -c "go mod init temp && 
+            go env -w GOPROXY=https://goproxy.io,direct &&
+            go get github.com/gin-gonic/gin && 
+            go run main.go"
+    networks:
+      - weather-station

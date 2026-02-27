@@ -1,0 +1,81 @@
+services:
+  app: 
+    platform: linux/amd64
+    build: 
+      context: .
+      dockerfile: ./docker/app/Dockerfile
+      args:
+      - GO_VERSION=${APP_GO_VERSION}
+      - GO_OS=${APP_GO_OS}
+      - GO_ARCH=${APP_GO_ARCH}
+      - GO_PROXY=${APP_GO_PROXY}
+    container_name: app
+    # restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      DB_HOST: db
+      DB_PORT: ${DB_PORT_INTERNAL:-5432}
+      DB_USER: ${DB_USER:-developer}
+      DB_PASSWORD: ${DB_PASSWORD:-qwerty123}
+      DB_NAME: ${DB_NAME:-weather_station}
+      APP_PORT: ${APP_PORT_INTERNAL:-8080}
+    ports:
+      - "${APP_PORT_EXTERNAL:-8080}:${APP_PORT_INTERNAL:-8080}"
+    networks:
+      - weather-station
+    depends_on:
+      db:
+        condition: service_healthy
+
+  migration:
+    build:
+      context: .
+      dockerfile: ./docker/migration/Dockerfile
+    container_name: migration
+    entrypoint: []
+    env_file:
+      - .env
+    environment:
+      DB_HOST: db
+      DB_PORT: ${DB_PORT_INTERNAL:-5432}
+      DB_USER: ${DB_USER:-developer}
+      DB_PASSWORD: ${DB_PASSWORD:-qwerty123}
+      DB_NAME: ${DB_NAME:-weather_station}
+    networks:
+      - weather-station
+    depends_on:
+      db:
+        condition: service_healthy
+  
+  db: 
+    build:
+      context: .
+      dockerfile: ./docker/db/Dockerfile
+    container_name: db
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${DB_NAME:-weather_station}
+      POSTGRES_USER: ${DB_USER:-developer}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-qwerty123}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "${DB_PORT_EXTERNAL:-5432}:${DB_PORT_INTERNAL:-5432}"
+    networks:
+      - weather-station
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-developer} -d ${DB_NAME:-weather_station}"]
+      interval: 10s  
+      timeout: 5s
+      retries: 5
+
+volumes:
+  db_data:
+    driver: local
+
+networks:
+  weather-station:
+    driver: bridge
