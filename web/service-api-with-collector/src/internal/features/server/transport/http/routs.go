@@ -57,4 +57,25 @@ const (
 	// Метод: POST
 	// Принимает JSON с данными станции (должен содержать ID)
 	StationDeleteByIDPath = BaseAPIPath + "/stations/delete"
+
+	// Пути для фронтенда (HTML страницы)
+	// -----------------------------------------
+
+	// FrontendHomePath - главная страница со списком станций
+	FrontendHomePath = "/home"
+
+	// FrontendStationPath - страница детального просмотра станции
+	FrontendStationPath = "/station"
+
+	// FrontendCreatePath - страница создания новой станции
+	FrontendCreatePath = "/station/create"
+
+	// FrontendEditPath - страница редактирования станции
+	FrontendEditPath = "/station/edit"
+
+	// FrontendStaticPath - путь для статических файлов (CSS, JS, изображения)
+	FrontendStaticPath = "/static/"
+
+	// FrontendStaticDir - директория на диске для статических файлов
+	FrontendStaticDir = "./templates/static"
 )

@@ -20,6 +20,8 @@ services:
       DB_PASSWORD: ${DB_PASSWORD:-qwerty123}
       DB_NAME: ${DB_NAME:-weather_station}
       APP_PORT: ${APP_PORT_INTERNAL:-8080}
+    volumes:
+      - ./src/templates:/app/templates
     ports:
       - "${APP_PORT_EXTERNAL:-8080}:${APP_PORT_INTERNAL:-8080}"
     networks:
@@ -71,6 +73,32 @@ services:
       interval: 10s  
       timeout: 5s
       retries: 5
+  
+  frontend-build:
+    build:
+      context: .
+      dockerfile: ./docker/frontend/Dockerfile
+    container_name: frontend-build
+    working_dir: /frontend
+    volumes:
+      - ./frontend/src:/frontend/src
+      - ./src/templates/static/dist:/frontend/dist
+    command: ["npm", "run", "build"]
+    profiles:
+      - build
+
+  frontend-watch:
+    build:
+      context: .
+      dockerfile: ./docker/frontend/Dockerfile
+    container_name: frontend-watch
+    working_dir: /frontend
+    volumes:
+      - ./frontend/src/:/frontend/src/
+      - ./src/templates/static/dist:/frontend/dist
+    command: ["npm", "run", "watch"]
+    profiles:
+      - dev
 
 volumes:
   db_data:

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Список станций</title>
+    <link rel="stylesheet" href="{{ .css }}">
+</head>
+<body>
+    <div class="container">
+        <div class="header-with-button">
+            <h1>🌤 Погодные станции</h1>
+            <button class="btn-add" onclick="addNewStation()">
+                ➕ Добавить станцию
+            </button>
+        </div>
+        
+        <div id="stationsContainer">
+            <div class="loading">⏳ Загрузка станций...</div>
+        </div>
+
+        <div class="controls">
+            <button class="refresh-btn" onclick="window.loadStations()">
+                🔄 Обновить список
+            </button>
+        </div>
+
+        <div class="timestamp" id="timestamp"></div>
+    </div>
+    <script type="module" src="{{ .js }}"></script>
+</body>
+</html>
