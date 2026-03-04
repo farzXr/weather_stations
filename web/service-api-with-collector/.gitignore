@@ -48,3 +48,6 @@ mem.prof
 
 # Другие 
 api.http
+src/templates/static/dist/js/
+src/templates/static/dist/css/
+src/templates/static/dist/manifest.json

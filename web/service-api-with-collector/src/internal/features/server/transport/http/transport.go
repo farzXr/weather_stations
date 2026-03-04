@@ -8,14 +8,16 @@ import (
 	"os"
 	"time"
 
+	"github.com/farzXr/weatherStation/internal/core/utils"
 	"github.com/farzXr/weatherStation/internal/features/server/service"
 )
 
 // TransportHttp представляет HTTP транспортный слой для обработки входящих запросов
 type TransportHttp struct {
-	Router  *http.ServeMux
-	Server  *http.Server
-	service service.ServiceProcessor
+	Router           *http.ServeMux
+	Server           *http.Server
+	service          service.ServiceProcessor
+	manifestFrontend utils.Manifest
 }
 
 // NewTransportHttp создает новый экземпляр HTTP транспорта
@@ -26,7 +28,8 @@ func NewTransportHttp(service service.ServiceProcessor) *TransportHttp {
 	}
 
 	return &TransportHttp{
-		service: service,
+		service:          service,
+		manifestFrontend: *utils.NewManifest("/app/templates/static/dist/manifest.json"),
 	}
 }
 
@@ -50,6 +53,18 @@ func (t *TransportHttp) Init() error {
 	t.Router.HandleFunc(StationByIDPath, t.GetStation)
 	t.Router.HandleFunc(StationEditByIDPath, t.EditStation)
 	t.Router.HandleFunc(StationDeleteByIDPath, t.DeleteStation)
+
+	// Регистрация эндпоинтов для работы с frontend
+	t.Router.HandleFunc(FrontendHomePath, t.Home)
+	t.Router.HandleFunc(FrontendStationPath, t.Station)
+	t.Router.HandleFunc(FrontendCreatePath, t.StationCreate)
+	t.Router.HandleFunc(FrontendEditPath, t.StationEdit)
+
+	// Статические файлы
+	t.Router.Handle(
+		FrontendStaticPath,
+		http.StripPrefix(FrontendStaticPath, http.FileServer(http.Dir(FrontendStaticDir))),
+	)
 
 	log.Println("HTTP маршрутизатор успешно инициализирован")
 	return nil
