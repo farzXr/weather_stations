@@ -5,6 +5,7 @@ const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
 module.exports = {
   entry: {
     index: './src/js/pages/index-script.js',
+    station: './src/js/pages/station-script.js',
   },
   output: {
     filename: 'js/[name].[contenthash].js',
