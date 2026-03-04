@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Детали погодной станции</title>
+    <!-- Chart.js для графиков -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- date-fns для форматирования дат (опционально) -->
+    <script src="https://cdn.jsdelivr.net/npm/date-fns@2.29.3/cdn/date-fns.min.js"></script>
+    <!-- chartjs-adapter-date-fns для временной шкалы -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <link rel="stylesheet" href="{{ .css }}">
+</head>
+<body>
+    <div class="container">
+        <!-- Навигация -->
+        <div class="navigation">
+            <a href="http://localhost:8080/home" class="back-btn">
+                <span>←</span> К списку станций
+            </a>
+            <button class="refresh-btn" id="refreshBtn">
+                <span>🔄</span> Обновить данные
+            </button>
+        </div>
+
+        <!-- Заголовок станции -->
+        <div class="station-title" id="stationTitle">
+            <h1 id="stationName">Загрузка...</h1>
+            <div class="station-id" id="stationId"></div>
+        </div>
+
+        <!-- Основная информация -->
+        <div class="cards-grid">
+            <!-- Карточка с информацией о станции -->
+            <div class="card">
+                <h2>📍 Информация о станции</h2>
+                <div class="info-grid" id="stationInfo">
+                    <div class="info-item">
+                        <span class="info-icon">📍</span>
+                        <span class="info-label">Локация:</span>
+                        <span class="info-value" id="stationLocation">—</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-icon">🔗</span>
+                        <span class="info-label">URL:</span>
+                        <a class="info-value url" id="stationUrl" href="#" target="_blank">—</a>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-icon">📅</span>
+                        <span class="info-label">Создана:</span>
+                        <span class="info-value" id="stationCreated">—</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-icon">🔄</span>
+                        <span class="info-label">Обновлена:</span>
+                        <span class="info-value" id="stationUpdated">—</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Карточка с текущими показаниями -->
+            <div class="card">
+                <h2>🌡 Текущие показания</h2>
+                <div class="current-readings" id="currentReadings">
+                    <div class="reading-item">
+                        <div class="reading-value" id="currentTemp">—</div>
+                        <div class="reading-label">Температура</div>
+                        <div class="reading-unit">°C</div>
+                    </div>
+                    <div class="reading-item">
+                        <div class="reading-value" id="currentHumidity">—</div>
+                        <div class="reading-label">Влажность</div>
+                        <div class="reading-unit">%</div>
+                    </div>
+                    <div class="reading-item">
+                        <div class="reading-value" id="currentPressure">—</div>
+                        <div class="reading-label">Давление</div>
+                        <div class="reading-unit">гПа</div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin-top: 10px; color: #999; font-size: 0.85rem;" id="lastUpdateTime">
+                    Последнее обновление: —
+                </div>
+            </div>
+
+            <!-- Карточка со статистикой -->
+            <div class="card">
+                <h2>📊 Статистика за период</h2>
+                <div class="stats-grid" id="statistics">
+                    <div class="stat-item">
+                        <div class="stat-label">Всего измерений</div>
+                        <div class="stat-value" id="statsCount">—</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Средняя темп.</div>
+                        <div class="stat-value" id="statsAvgTemp">—</div>
+                        <div class="stat-unit">°C</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Мин. температура</div>
+                        <div class="stat-value" id="statsMinTemp">—</div>
+                        <div class="stat-unit">°C</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Макс. температура</div>
+                        <div class="stat-value" id="statsMaxTemp">—</div>
+                        <div class="stat-unit">°C</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Средняя влажность</div>
+                        <div class="stat-value" id="statsAvgHumidity">—</div>
+                        <div class="stat-unit">%</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Среднее давление</div>
+                        <div class="stat-value" id="statsAvgPressure">—</div>
+                        <div class="stat-unit">гПа</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Выбор периода -->
+        <div class="period-selector">
+            <div class="period-title">
+                <span>📅</span> Период для графиков и статистики
+            </div>
+            
+            <!-- Быстрые периоды -->
+            <div class="period-buttons">
+                <button class="period-btn" data-period="5min">5 минут</button>
+                <button class="period-btn" data-period="15min">15 мин</button>
+                <button class="period-btn" data-period="30min">30 мин</button>
+                <button class="period-btn" data-period="1hour">1 час</button>
+                <button class="period-btn" data-period="4hours">4 часа</button>
+                <button class="period-btn" data-period="12hours">12 часов</button>
+                <button class="period-btn active" data-period="day">24 часа</button>
+                <button class="period-btn" data-period="week">7 дней</button>
+                <button class="period-btn" data-period="month">30 дней</button>
+            </div>
+            
+            <!-- Кастомный выбор периода -->
+            <div class="custom-period">
+                <div class="custom-period-title">
+                    <span>⚙️</span> Свой период
+                </div>
+                <div class="custom-period-controls">
+                    <div class="date-input-group">
+                        <label for="customFrom">С:</label>
+                        <input type="datetime-local" id="customFrom" class="date-input">
+                    </div>
+                    <div class="date-input-group">
+                        <label for="customTo">По:</label>
+                        <input type="datetime-local" id="customTo" class="date-input">
+                    </div>
+                    <button class="apply-period-btn" id="applyCustomPeriod">
+                        <span>✓</span> Применить
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Графики -->
+        <div class="charts-container">
+            <div class="chart-card">
+                <h2>🌡 Температура (°C)</h2>
+                <div class="chart-container">
+                    <canvas id="tempChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <h2>💧 Влажность (%)</h2>
+                <div class="chart-container">
+                    <canvas id="humidityChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <h2>📊 Давление (гПа)</h2>
+                <div class="chart-container">
+                    <canvas id="pressureChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="timestamp" id="timestamp"></div>
+    </div>
+    <script type="module" src="{{ .js }}"></script>
+</body>
+</html>
