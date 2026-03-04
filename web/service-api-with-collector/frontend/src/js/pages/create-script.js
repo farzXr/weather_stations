@@ -110,9 +110,7 @@ document.getElementById('createStationForm').addEventListener('submit', async (e
         
         // Устанавливаем ссылку на просмотр созданной станции
         document.getElementById('viewStationLink').href = `${APP_BASE_URL}/station?id=${encodeURIComponent(result.id)}`;
-        
-        // Ссылка на главную страницу
-        document.querySelector('.navigation .back-btn').href = `http://${APP_BASE_URL}/home`;
+        document.querySelector('.navigation .back-btn').href = `${APP_BASE_URL}/home`;
         
         // Показываем карточку с результатом
         document.getElementById('resultCard').classList.add('show');

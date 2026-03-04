@@ -5,7 +5,7 @@
  */
 
 import '../../styles/station-style.css';
-import { API_BASE_URL } from '../constants/config';
+import { API_BASE_URL, APP_BASE_URL } from '../constants/config';
 import { formatDate, correctTimeZone, correctForServer, formatForDateTimeInput } from '../utils/dateUtils';
 import { formatNumber } from '../utils/numberUtils';
 import { showNotification, setButtonLoading, setProgressBar, showError } from '../utils/uiUtils';
@@ -438,7 +438,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const backLink = document.querySelector('.back-btn');
     if (backLink) {
-        backLink.href = `http://${API_BASE_URL}/home`;  // или относительный путь
+        backLink.href = `${APP_BASE_URL}/home`;  // или относительный путь
     }
     
     // Устанавливаем даты по умолчанию для кастомного периода (вчера - сегодня)

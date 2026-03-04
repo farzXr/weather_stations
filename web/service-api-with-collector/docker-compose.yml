@@ -107,6 +107,16 @@ services:
     command: ["npm", "run", "watch"]
     profiles:
       - dev
+  
+  deploy:
+    build: 
+      context: .
+      dockerfile: ./docker/deploy/Dockerfile
+    container_name: ansible-deploy
+    working_dir: /ansible
+    volumes:
+      - ./deploy:/ansible 
+    command: ["ansible", "--version"]
 
 volumes:
   db_data:

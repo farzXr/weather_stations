@@ -1,7 +1,8 @@
-.PHONY: help build run run-mock stop migrate test-api test-full remove remove-app remove-db build-frontend watch-frontend stop-watch-frontend
+.PHONY: help build run run-mock stop migrate test-api test-full remove remove-app remove-db build-frontend watch-frontend stop-watch-frontend run-remote-app bootstrap-remote-server bootstrap-remote-server-ssh bootstrap-run-remote
 
 help:
 	@echo "Доступные команды:"
+	@echo "  Основные команды для локальной разработки:"
 	@echo "  make build      	  - Первый запуск: сборка и запуск всех сервисов с миграциями"
 	@echo "  make run        	  - Повторный запуск: только основные сервисы (app, db)"
 	@echo "  make run-mock   	  - Запуск с мок-серверами для тестирования"
@@ -10,11 +11,21 @@ help:
 	@echo "  make remove-app 	  - Остановка и удаление app контейнера"
 	@echo "  make remove-db  	  - Остановка и удаление db контейнера"
 	@echo "  make migrate    	  - Запуск только сервиса миграций"
+	@echo ""
+	@echo "  Команды для тестирования:"
 	@echo "  make test-api   	  - Запуск тестов (приложение уже должно быть запущено)"
 	@echo "  make test-full  	  - Полный цикл: сборка + моки + тесты + остановка"
+	@echo ""
+	@echo "  Команды для фронтенда:"
 	@echo "  make build-frontend   - Запуск сборки frontend с помощью webpack"
 	@echo "  make watch-frontend   - Запуск frontend в режиме автопересборки (для dev)"
 	@echo "  make stop-watch-frontend - Остановка режима автопересборки frontend"
+	@echo ""
+	@echo "  Команды для удаленного развертывания:"
+	@echo "  make run-remote-app         - Запуск приложения на удаленном сервере (выполняет make build)"
+	@echo "  make bootstrap-remote-server - Настройка удаленного сервера (установка git, docker, docker-compose)"
+	@echo "  make bootstrap-remote-server-ssh - Настройка удаленного сервера (установка git, docker, docker-compose с генерацией и прокидываением ключей)"
+	@echo "  make bootstrap-run-remote    - Полный цикл: полная настройка + запуск приложения на удаленном сервере"
 
 # Первый запуск: сборка + миграции + запуск
 build: docker-compose.yml
@@ -51,7 +62,7 @@ remove-app: docker-compose.yml
 	@echo "✅ Контейнер app остановлен и удалён."
 
 # Удаление контейнера db
-remove-db: docker-compose.yml  # ← БЫЛО remove-app, ИСПРАВЛЕНО на remove-db
+remove-db: docker-compose.yml
 	docker compose down db
 	@echo "✅ Контейнер db остановлен и удалён."
 
@@ -94,3 +105,19 @@ watch-frontend:
 stop-watch-frontend:
 	docker compose --profile dev stop frontend-watch
 	@echo "✅ Остановлен режим автопересборки фронта."
+
+# Запуск приложения на удаленном сервере (выполняет make build)
+run-remote-app:
+	docker compose run deploy make run-app
+
+# Настройка удаленного сервера (установка git, docker, docker-compose)
+bootstrap-remote-server:
+	docker compose run deploy make bootstrap-servers-ssh
+
+# Настройка удаленного сервера (установка git, docker, docker-compose с генерацией и прокидываением ключей)
+bootstrap-remote-server-ssh:
+	docker compose run deploy make bootstrap-servers-ssh	
+
+# Полный цикл: полная настройка + запуск приложения на удаленном сервере
+bootstrap-run-remote:
+	docker compose run deploy make full-execute

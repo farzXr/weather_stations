@@ -1,0 +1,93 @@
+- name: Install git, docker, docker compose
+  hosts: prod
+  become: yes
+  become_method: sudo
+
+  tasks:
+    - name: Install git and dependencies
+      apt:
+        name:
+          - git
+          - ca-certificates
+          - curl
+        state: present
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Create keyrings directory
+      file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: '0755'
+
+    - name: Download Docker's GPG key
+      get_url:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        dest: /etc/apt/keyrings/docker.asc
+        mode: '0644'
+
+    - name: Get Ubuntu codename
+      shell: . /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}"
+      register: ubuntu_codename
+      changed_when: false
+
+    - name: Add Docker repository (modern .sources format)
+      copy:
+        dest: /etc/apt/sources.list.d/docker.sources
+        content: |
+          Types: deb
+          URIs: https://download.docker.com/linux/ubuntu
+          Suites: {{ ubuntu_codename.stdout }}
+          Components: stable
+          Signed-By: /etc/apt/keyrings/docker.asc
+        mode: '0644'
+
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install Docker packages
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-buildx-plugin
+          - docker-compose-plugin
+        state: present
+
+    - name: Start and enable Docker service
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Add user to docker group (optional)
+      user:
+        name: "{{ ansible_user }}"
+        groups: docker
+        append: yes
+      when: ansible_user != 'root'
+
+    - name: Verify git installation
+      command: git --version
+      register: git_version
+      changed_when: false
+
+    - name: Verify docker installation
+      command: docker --version
+      register: docker_version
+      changed_when: false
+
+    - name: Verify docker compose installation
+      command: docker compose version
+      register: compose_version
+      changed_when: false
+      ignore_errors: yes
+
+    - name: Show versions
+      debug:
+        msg:
+          - "Git version: {{ git_version.stdout }}"
+          - "Docker version: {{ docker_version.stdout }}"
+          - "Docker Compose version: {{ compose_version.stdout | default('Not installed') }}"

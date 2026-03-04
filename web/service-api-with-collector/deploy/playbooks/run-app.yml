@@ -1,0 +1,40 @@
+- name: Deploy project from GitHub and build
+  hosts: prod
+  become: yes
+  vars:
+    repo_url: "https://github.com/farzXr/weather_stations"
+    project_dir: "/home/{{ ansible_user }}/project"
+    make_dir: /{{ project_dir }}/web/service-api-with-collector
+    branch: "master"
+
+  tasks:
+    - name: Install git if not present
+      apt:
+        name: git
+        state: present
+        update_cache: yes
+      when: ansible_os_family == "Debian"
+
+    - name: Ensure project directory exists
+      file:
+        path: "{{ project_dir }}"
+        state: directory
+        mode: '0755'
+
+    - name: Clone or update repository
+      git:
+        repo: "{{ repo_url }}"
+        dest: "{{ project_dir }}"
+        version: "{{ branch }}"
+        update: yes
+        force: yes
+
+    - name: Run make build in project directory
+      make:
+        chdir: "{{ make_dir }}"
+        target: build
+      register: build_result
+
+    - name: Show build result
+      debug:
+        msg: "Build completed: {{ build_result.stdout }}"
