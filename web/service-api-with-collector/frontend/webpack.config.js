@@ -6,6 +6,7 @@ module.exports = {
   entry: {
     index: './src/js/pages/index-script.js',
     station: './src/js/pages/station-script.js',
+    edit: './src/js/pages/edit-script.js'
   },
   output: {
     filename: 'js/[name].[contenthash].js',

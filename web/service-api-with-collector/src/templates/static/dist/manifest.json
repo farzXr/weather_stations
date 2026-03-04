@@ -2,5 +2,7 @@
   "index.css": "/static/dist/css/index.f9bed4ca202f4c5be389.css",
   "index.js": "/static/dist/js/index.8b70b8ca8b41d655f636.js",
   "station.css": "/static/dist/css/station.44b0200ce4659eb1e73a.css",
-  "station.js": "/static/dist/js/station.d38954766d7540a45dd8.js"
+  "station.js": "/static/dist/js/station.d38954766d7540a45dd8.js",
+  "edit.css": "/static/dist/css/edit.41ac71a70588a91ba10e.css",
+  "edit.js": "/static/dist/js/edit.51a493e359493f0580fd.js"
 }
