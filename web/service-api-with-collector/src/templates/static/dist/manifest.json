@@ -4,5 +4,7 @@
   "station.css": "/static/dist/css/station.44b0200ce4659eb1e73a.css",
   "station.js": "/static/dist/js/station.d38954766d7540a45dd8.js",
   "edit.css": "/static/dist/css/edit.41ac71a70588a91ba10e.css",
-  "edit.js": "/static/dist/js/edit.51a493e359493f0580fd.js"
+  "edit.js": "/static/dist/js/edit.51a493e359493f0580fd.js",
+  "create.css": "/static/dist/css/create.0040432f443ed99cc284.css",
+  "create.js": "/static/dist/js/create.00ea7554bb4762bac2c2.js"
 }

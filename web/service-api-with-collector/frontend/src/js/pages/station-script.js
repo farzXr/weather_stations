@@ -304,6 +304,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (refreshBtn) {
         refreshBtn.addEventListener('click', loadAllData);
     }
+
+    const backLink = document.querySelector('.back-btn');
+    if (backLink) {
+        backLink.href = `http://${API_BASE_URL}/home`;  // или относительный путь
+    }
     
     // Устанавливаем даты по умолчанию для кастомного периода
     const now = new Date();

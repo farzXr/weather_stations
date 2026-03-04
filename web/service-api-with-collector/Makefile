@@ -18,7 +18,9 @@ help:
 
 # Первый запуск: сборка + миграции + запуск
 build: docker-compose.yml
-	docker compose up -d --build
+	docker compose up -d --build db
+	docker compose up -d --build migration
+	docker compose up -d --build app
 	make build-frontend
 	@echo "✅ Проект собран и запущен. Миграции выполнены."
 
