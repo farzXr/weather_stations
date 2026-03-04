@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Создание станции</title>
+    <link rel="stylesheet" href="{{ .css }}">
+</head>
+<body>
+    <div class="container">
+        <!-- Навигация -->
+        <div class="navigation">
+            <a href="http://localhost:8080/home" class="back-btn">
+                <span>←</span> На главную
+            </a>
+            <div class="page-title">➕ Новая станция</div>
+        </div>
+
+        <!-- Основной контент -->
+        <div class="content">
+            <h1>
+                <span>🌤️</span> 
+                Добавление метеостанции
+            </h1>
+            
+            <div class="subtitle">
+                Заполните информацию о новой метеостанции. 
+                Все поля обязательны для заполнения.
+            </div>
+
+            <!-- Контейнер для уведомлений -->
+            <div id="notificationContainer"></div>
+
+            <!-- Форма создания станции -->
+            <form id="createStationForm" novalidate>
+                <!-- Название станции -->
+                <div class="form-group">
+                    <label for="name">
+                        Название станции <span>*</span>
+                        <span class="required-hint">обязательно</span>
+                    </label>
+                    <input 
+                        type="text" 
+                        id="name" 
+                        name="name" 
+                        placeholder="Например: Метеостанция на даче"
+                        autocomplete="off"
+                    >
+                    <div class="hint">
+                        Введите понятное название, чтобы легко найти станцию в списке
+                    </div>
+                    <div class="error-message" id="nameError"></div>
+                </div>
+
+                <!-- Локация -->
+                <div class="form-group">
+                    <label for="location">
+                        Местоположение <span>*</span>
+                        <span class="required-hint">обязательно</span>
+                    </label>
+                    <input 
+                        type="text" 
+                        id="location" 
+                        name="location" 
+                        placeholder="Например: Москва, ул. Ленина 1"
+                        autocomplete="off"
+                    >
+                    <div class="hint">
+                        Город, улица или любые координаты для идентификации места
+                    </div>
+                    <div class="error-message" id="locationError"></div>
+                </div>
+
+                <!-- URL станции -->
+                <div class="form-group">
+                    <label for="url">
+                        URL станции <span>*</span>
+                        <span class="required-hint">обязательно</span>
+                    </label>
+                    <input 
+                        type="url" 
+                        id="url" 
+                        name="url" 
+                        placeholder="https://example.com/api/weather"
+                        autocomplete="off"
+                    >
+                    <div class="hint">
+                        Адрес, по которому доступны данные станции (начинается с http:// или https://)
+                    </div>
+                    <div class="error-message" id="urlError"></div>
+                </div>
+
+                <!-- Примеры для вдохновения -->
+                <div class="examples">
+                    <div class="examples-title">
+                        <span>📝</span> Примеры заполнения:
+                    </div>
+                    <div class="examples-grid">
+                        <div class="example-item">
+                            <div>🏠 Домашняя:</div>
+                            <code>"Домашняя метеостанция"</code>
+                        </div>
+                        <div class="example-item">
+                            <div>📍 Локация:</div>
+                            <code>"Саратов, центр"</code>
+                        </div>
+                        <div class="example-item">
+                            <div>🔗 URL:</div>
+                            <code>http://localhost:8082/temp</code>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Кнопки формы -->
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="window.clearForm()">
+                        <span>🔄</span> Очистить
+                    </button>
+                    <button type="submit" class="btn btn-primary" id="submitBtn">
+                        <span>💾</span> Создать станцию
+                    </button>
+                </div>
+
+                <!-- Прогресс-бар загрузки -->
+                <div class="progress-bar" id="progressBar">
+                    <div class="progress-fill"></div>
+                </div>
+            </form>
+
+            <!-- Результат создания -->
+            <div class="result-card" id="resultCard">
+                <div class="result-title">
+                    <span>✅</span> Станция успешно создана!
+                </div>
+                <div class="result-item">
+                    <span class="result-label">ID:</span>
+                    <span class="result-value" id="resultId"></span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Название:</span>
+                    <span class="result-value" id="resultName"></span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Локация:</span>
+                    <span class="result-value" id="resultLocation"></span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">URL:</span>
+                    <span class="result-value" id="resultUrl"></span>
+                </div>
+                <div style="margin-top: 15px; text-align: center;">
+                    <a href="#" id="viewStationLink" class="btn btn-primary" style="text-decoration: none; display: inline-block; padding: 8px 20px;">
+                        <span>🔍</span> Перейти к станции
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="{{ .js }}"></script>
+</body>
+</html>
